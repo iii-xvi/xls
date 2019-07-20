@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"sort"
 	"unicode/utf16"
 )
 
@@ -31,6 +32,19 @@ func (w *WorkSheet) Row(i int) *Row {
 		row.wb = w.wb
 	}
 	return row
+}
+
+func (w *WorkSheet) RowIndexes() []uint16 {
+	rows := make([]uint16, len(w.rows))
+	ri := 0
+	for i := range w.rows {
+		rows[ri] = i
+		ri++
+	}
+	sort.SliceStable(rows, func(i, j int) bool {
+		return rows[i] < rows[j]
+	})
+	return rows
 }
 
 func (w *WorkSheet) parse(buf io.ReadSeeker) {
